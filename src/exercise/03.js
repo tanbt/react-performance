@@ -4,6 +4,7 @@
 import * as React from 'react'
 import {useCombobox} from '../use-combobox'
 import {getItems} from '../workerized-filter-cities'
+// import {getItems} from '../filter-cities'
 import {useAsync, useForceRerender} from '../utils'
 
 function Menu({
