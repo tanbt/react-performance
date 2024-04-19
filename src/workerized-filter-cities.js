@@ -7,7 +7,7 @@
 
 import {getItems as syncGetItems} from './filter-cities'
 
-const getItems = async () => syncGetItems()
+const getItems = async filter => syncGetItems(filter)
 export {getItems}
 
 /*

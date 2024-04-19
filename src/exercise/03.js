@@ -42,6 +42,7 @@ function ListItem({
   highlightedIndex,
   ...props
 }) {
+  console.log('rerender list items')
   const isSelected = selectedItem?.id === item.id
   const isHighlighted = highlightedIndex === index
   return (
