@@ -60,7 +60,22 @@ function ListItem({
   )
 }
 // 🐨 Memoize the ListItem here using React.memo
-ListItem = React.memo(ListItem)
+ListItem = React.memo(ListItem, (prevProps, nextProps) => {
+  if (prevProps.highlightedIndex !== nextProps.highlightedIndex) {
+    const wasHighlighted = prevProps.highlightedIndex === prevProps.index
+    const willBeHighlighted = nextProps.highlightedIndex === nextProps.index
+    // if the current highlighted item is also the item that is going to be highlighted,
+    // return true to prevent re-render
+    return wasHighlighted === willBeHighlighted
+  }
+
+  return (
+    prevProps.getItemProps === nextProps.getItemProps &&
+    prevProps.item === nextProps.item &&
+    prevProps.index === nextProps.index &&
+    prevProps.selectedItem === nextProps.selectedItem
+  )
+})
 
 function App() {
   const forceRerender = useForceRerender()
