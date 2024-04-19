@@ -32,6 +32,7 @@ function Menu({
   )
 }
 // 🐨 Memoize the Menu here using React.memo
+Menu = React.memo(Menu)
 
 function ListItem({
   getItemProps,
@@ -58,6 +59,7 @@ function ListItem({
   )
 }
 // 🐨 Memoize the ListItem here using React.memo
+ListItem = React.memo(ListItem)
 
 function App() {
   const forceRerender = useForceRerender()
@@ -67,7 +69,7 @@ function App() {
   React.useEffect(() => {
     run(getItems(inputValue))
   }, [inputValue, run])
-  const items = allItems.slice(0, 100)
+  const items = allItems.slice(0, 100) // This always give new Items to Menu so Menu always rerender
 
   const {
     selectedItem,
