@@ -38,8 +38,9 @@ function AppProvider({children}) {
     dogName: '',
     grid: initialGrid,
   })
-  // 🐨 memoize this value with React.useMemo
-  const value = [state, dispatch]
+  // 🐨 memoize this value with React.useMemo and click "force rerender" to see performance improvement
+  // const value = [state, dispatch]
+  const value = React.useMemo(() => [state, dispatch], [state])
   return (
     <AppStateContext.Provider value={value}>
       {children}
