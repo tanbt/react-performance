@@ -11,6 +11,7 @@ import {
 } from '../utils'
 
 const AppStateContext = React.createContext()
+const AppGridStateContext = React.createContext()
 
 const initialGrid = Array.from({length: 100}, () =>
   Array.from({length: 100}, () => Math.random() * 100),
@@ -48,6 +49,20 @@ function AppProvider({children}) {
   )
 }
 
+function AppGridProvider({children}) {
+  const [, dispatch] = React.useReducer(appReducer, {
+    dogName: '',
+    grid: initialGrid,
+  })
+  const value = React.useMemo(() => [dispatch], [dispatch])
+
+  return (
+    <AppGridStateContext.Provider value={value}>
+      {children}
+    </AppGridStateContext.Provider>
+  )
+}
+
 function useAppState() {
   const context = React.useContext(AppStateContext)
   if (!context) {
@@ -56,8 +71,16 @@ function useAppState() {
   return context
 }
 
+function useAppGridState() {
+  const context = React.useContext(AppGridStateContext)
+  if (!context) {
+    throw new Error('useAppGridState must be used within the AppGridProvider')
+  }
+  return context
+}
+
 function Grid() {
-  const [, dispatch] = useAppState()
+  const [, dispatch] = useAppGridState()
   const [rows, setRows] = useDebouncedState(50)
   const [columns, setColumns] = useDebouncedState(50)
   const updateGridData = () => dispatch({type: 'UPDATE_GRID'})
@@ -128,7 +151,9 @@ function App() {
       <AppProvider>
         <div>
           <DogNameInput />
-          <Grid />
+          <AppGridProvider>
+            <Grid />
+          </AppGridProvider>
         </div>
       </AppProvider>
     </div>
