@@ -11,7 +11,7 @@ import {
 } from '../utils'
 
 const AppStateContext = React.createContext()
-const AppGridStateContext = React.createContext()
+const AppDispatchStateContext = React.createContext()
 
 const initialGrid = Array.from({length: 100}, () =>
   Array.from({length: 100}, () => Math.random() * 100),
@@ -41,25 +41,13 @@ function AppProvider({children}) {
   })
   // 🐨 memoize this value with React.useMemo and click "force rerender" to see performance improvement
   // const value = [state, dispatch]
-  const value = React.useMemo(() => [state, dispatch], [state])
+  // const value = React.useMemo(() => [state, dispatch], [state])
   return (
-    <AppStateContext.Provider value={value}>
-      {children}
+    <AppStateContext.Provider value={state}>
+      <AppDispatchStateContext.Provider value={dispatch}>
+        {children}
+      </AppDispatchStateContext.Provider>
     </AppStateContext.Provider>
-  )
-}
-
-function AppGridProvider({children}) {
-  const [, dispatch] = React.useReducer(appReducer, {
-    dogName: '',
-    grid: initialGrid,
-  })
-  const value = React.useMemo(() => [dispatch], [dispatch])
-
-  return (
-    <AppGridStateContext.Provider value={value}>
-      {children}
-    </AppGridStateContext.Provider>
   )
 }
 
@@ -71,16 +59,16 @@ function useAppState() {
   return context
 }
 
-function useAppGridState() {
-  const context = React.useContext(AppGridStateContext)
+function useAppDispatch() {
+  const context = React.useContext(AppDispatchStateContext)
   if (!context) {
-    throw new Error('useAppGridState must be used within the AppGridProvider')
+    throw new Error('useAppDispatch must be used within the AppProvider')
   }
   return context
 }
 
 function Grid() {
-  const [, dispatch] = useAppGridState()
+  const dispatch = useAppDispatch()
   const [rows, setRows] = useDebouncedState(50)
   const [columns, setColumns] = useDebouncedState(50)
   const updateGridData = () => dispatch({type: 'UPDATE_GRID'})
@@ -98,7 +86,9 @@ function Grid() {
 Grid = React.memo(Grid)
 
 function Cell({row, column}) {
-  const [state, dispatch] = useAppState()
+  const state = useAppState()
+  const dispatch = useAppDispatch()
+
   const cell = state.grid[row][column]
   const handleClick = () => dispatch({type: 'UPDATE_GRID_CELL', row, column})
   return (
@@ -117,7 +107,8 @@ function Cell({row, column}) {
 Cell = React.memo(Cell)
 
 function DogNameInput() {
-  const [state, dispatch] = useAppState()
+  const state = useAppState()
+  const dispatch = useAppDispatch()
   const {dogName} = state
 
   function handleChange(event) {
@@ -151,9 +142,7 @@ function App() {
       <AppProvider>
         <div>
           <DogNameInput />
-          <AppGridProvider>
-            <Grid />
-          </AppGridProvider>
+          <Grid />
         </div>
       </AppProvider>
     </div>
